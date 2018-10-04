@@ -21,10 +21,8 @@ class SampleController {
     }
 
     @ModelAttribute
-    fun authenticate(@CookieValue(name = "sid", required = false) sessionId: String?): User? {
-        return sessionId?.let { sid ->
-            findAccountBySessionId(sid)
-        }
+    fun allowGuest(@CookieValue(name = "sid", required = false) sessionId: String?): User? {
+        return sessionId?.let { findAccountBySessionId(it) }
     }
 
     @ModelAttribute
@@ -32,8 +30,13 @@ class SampleController {
         return findAccountBySessionId(sessionId)!!
     }
 
-    fun findAccountBySessionId(sessionId: String): User? {
-        return if (sessionId == "exists") User("John Doe") else null
+    fun findAccountBySessionId(sessionId: String?): User? {
+        return sessionId
+                ?. takeIf { it == "....." }
+                ?. takeIf { it == "....." }
+                ?. let { User("name") }
+
+//        return if (sessionId == "exists") User("John Doe") else null
     }
 
 }

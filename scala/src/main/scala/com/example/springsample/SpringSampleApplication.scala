@@ -1,4 +1,4 @@
-package com.example.springsamplescala
+package com.example.springsample
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
