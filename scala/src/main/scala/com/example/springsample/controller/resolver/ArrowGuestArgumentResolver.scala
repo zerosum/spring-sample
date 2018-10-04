@@ -7,7 +7,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.{HandlerMethodArgumentResolver, ModelAndViewContainer}
 
-class AuthenticatedArgumentResolver(val userRepository: UserRepository) extends HandlerMethodArgumentResolver {
+class ArrowGuestArgumentResolver(val userRepository: UserRepository) extends HandlerMethodArgumentResolver {
 
   override def resolveArgument(parameter: MethodParameter,
                                container: ModelAndViewContainer,
@@ -15,15 +15,13 @@ class AuthenticatedArgumentResolver(val userRepository: UserRepository) extends 
                                factory: WebDataBinderFactory): AnyRef = {
     val request = webRequest.getNativeRequest(classOf[HttpServletRequest])
 
-    val maybeUser = for {
+    for {
       sid <- request.getCookies.collectFirst { case c if c.getName == "sid" => c.getValue }
       user <- userRepository.findBySessionId(sid)
     } yield user
-
-    maybeUser.get
   }
 
   override def supportsParameter(parameter: MethodParameter): Boolean = {
-    parameter.hasParameterAnnotation(classOf[Authenticate])
+    parameter.hasParameterAnnotation(classOf[AllowGuest])
   }
 }
